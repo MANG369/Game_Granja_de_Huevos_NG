@@ -84,25 +84,22 @@
             margin: 10px 0;
         }
 
-        .clickable-area {
+        .chicken-area {
             text-align: center;
             position: relative;
-            min-height: 200px; 
+            min-height: 150px; /* Ajustado para el tamaño del emoji */
             display: flex;
             justify-content: center;
             align-items: center;
         }
         
         #chicken {
-            width: 200px;
-            height: 200px;
-            /* IMAGEN ACTUALIZADA A LA QUE SUBISTE */
-            background-image: url('https://i.imgur.com/gK61lYt.png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
+            /* Se vuelve a usar font-size para el emoji */
+            font-size: 120px;
             cursor: pointer;
             transition: transform 0.1s ease-out;
+            /* Se elimina el background-image */
+            background-image: none;
         }
         
         #chicken:active {
@@ -184,8 +181,8 @@
         <div class="panels-container">
             <div class="panel">
                 <h2>El Gallinero</h2>
-                <div class="clickable-area" id="clickable-area">
-                    <div id="chicken"></div> 
+                <div class="chicken-area" id="chicken-area">
+                    <div id="chicken">🐔</div> 
                 </div>
                 <div class="stats-display">
                     <p>$EC: <span id="ec-count">0.0000</span> 🪙</p>
@@ -248,9 +245,8 @@
         };
 
         // --- ELEMENTOS DEL DOM ---
-        // CAMBIADO: La constante ahora apunta al ID 'chicken'
-        const clickableObject = document.getElementById('chicken');
-        const clickableArea = document.getElementById('clickable-area');
+        const chicken = document.getElementById('chicken');
+        const chickenArea = document.getElementById('chicken-area');
         const ecCountDisplay = document.getElementById('ec-count');
         const ecPerClickDisplay = document.getElementById('ec-per-click');
         const upgradeClickButton = document.getElementById('upgrade-click-button');
@@ -285,7 +281,7 @@
         }
 
         // --- LÓGICA DEL JUEGO ---
-        clickableObject.addEventListener('click', () => {
+        chicken.addEventListener('click', () => {
             const reward = getClickReward(gameState.clickLevel);
             gameState.ecCount += reward;
             updateDisplays();
@@ -316,7 +312,7 @@
             el.textContent = text;
             el.className = 'floating-text';
             el.style.left = (Math.random() * 40 + 30) + '%';
-            clickableArea.appendChild(el);
+            chickenArea.appendChild(el);
             setTimeout(() => { el.remove(); }, 1500);
         }
 
