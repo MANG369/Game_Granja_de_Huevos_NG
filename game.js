@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- ESTRUCTURA DE MONEDA Y CONSTANTES ---
+    // --- CONSTANTES Y CONFIGURACIÓN ---
     const COIN_SYMBOL = '$EC';
     const MAX_ENERGY = 1000;
     const BASE_CLICK_VALUE = 0.000001;
@@ -19,12 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const energyLevelDisplay = document.getElementById('energy-level');
     const energyBarFill = document.getElementById('energy-bar-fill');
     const clickValueDisplay = document.getElementById('click-value-display');
-
+    const shopItemsContainer = document.getElementById('shop-items');
+    const toggleShopButton = document.getElementById('toggle-shop-button');
+    const sideShop = document.getElementById('side-shop');
+    const closeSideShopButton = document.getElementById('close-side-shop');
+    const sideShopItemsContainer = document.getElementById('side-shop-items');
+    
     // --- LÓGICA DE TON CONNECT ---
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json',
     });
-
     const walletButton = document.getElementById('wallet-button');
     tonConnectUI.onStatusChange(wallet => {
         if (wallet) {
@@ -36,22 +40,30 @@ document.addEventListener('DOMContentLoaded', () => {
             walletButton.textContent = 'Conectar Billetera 💎';
             walletButton.style.backgroundColor = '#0088cc';
         }
+        // Actualizar la tienda lateral si está abierta cuando cambia el estado de la billetera
+        if (sideShop.classList.contains('active')) {
+            renderSideShop();
+        }
     });
-
     walletButton.addEventListener('click', () => {
         tonConnectUI.connected ? tonConnectUI.disconnect() : tonConnectUI.openModal();
     });
 
-    // --- MEJORAS DE LA GRANJA ---
+    // --- MEJORAS DE LA GRANJA Y TIENDA DE TON ---
     const upgrades = [
-        { id: 1, name: '🐣 Gallina Ponedora', cost: 0.0002, production: 1, purchased: 0 },
-        { id: 2, name: '🏡 Nido Mejorado', cost: 0.001, production: 8, purchased: 0 },
-        { id: 3, name: '🌽 Alimentador Automático', cost: 0.01, production: 55, purchased: 0 },
-        { id: 4, name: '🚜 Tractor Pequeño', cost: 0.1, production: 377, purchased: 0 },
-        { id: 5, name: '🚚 Camión de Reparto', cost: 1, production: 2584, purchased: 0 }
+        { id: 1, name: '🐣 Gallina Ponedora', cost: 0.0002, production: 1 },
+        { id: 2, name: '🏡 Nido Mejorado', cost: 0.001, production: 8 },
+        { id: 3, name: '🌽 Alimentador Automático', cost: 0.01, production: 55 },
+        { id: 4, name: '🚜 Tractor Pequeño', cost: 0.1, production: 377 },
+        { id: 5, name: '🚚 Camión de Reparto', cost: 1, production: 2584 }
+    ];
+    const shopProducts = [
+        { ecAmount: 10000, tonPrice: 0.1 },
+        { ecAmount: 60000, tonPrice: 0.5 },
+        { ecAmount: 125000, tonPrice: 1.0 },
     ];
 
-    // --- FUNCIÓN FIBONACCI CON MEMOIZATION ---
+    // --- FUNCIÓN FIBONACCI ---
     const fibMemo = { 0: 1, 1: 1, 2: 2 };
     function fibonacci(n) {
         if (n in fibMemo) return fibMemo[n];
@@ -67,16 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUI();
         }
     });
-
-    // Regeneración de Energía cada 2 segundos
     setInterval(() => {
         if (energy < MAX_ENERGY) {
             energy = Math.min(MAX_ENERGY, energy + 2);
             updateUI();
         }
     }, 2000);
-
-    // Generación de Ingresos Pasivos cada segundo
     setInterval(() => {
         if (productionPerHour > 0) {
             score += productionPerHour / 3600;
@@ -84,12 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    // --- MANEJO DE MODALES (TIENDA Y POTENCIAR) ---
+    // --- MANEJO DE MODALES Y TIENDA LATERAL ---
     const modals = {
         shop: { button: document.getElementById('shop-button'), modal: document.getElementById('shop-modal'), render: renderShop },
         boost: { button: document.getElementById('boost-button'), modal: document.getElementById('boost-modal'), render: renderBoost }
     };
-
     Object.values(modals).forEach(item => {
         item.button.addEventListener('click', () => {
             item.render();
@@ -99,18 +106,25 @@ document.addEventListener('DOMContentLoaded', () => {
             item.modal.style.display = 'none';
         });
     });
-
     window.addEventListener('click', (event) => {
         Object.values(modals).forEach(item => {
-            if (event.target === item.modal) {
-                item.modal.style.display = 'none';
-            }
+            if (event.target === item.modal) item.modal.style.display = 'none';
         });
     });
 
-    // --- LÓGICA DE LA TIENDA ---
+    // Abrir/Cerrar Tienda Lateral de TON
+    toggleShopButton.addEventListener('click', () => {
+        renderSideShop();
+        sideShop.classList.add('active');
+    });
+    closeSideShopButton.addEventListener('click', () => {
+        sideShop.classList.remove('active');
+    });
+
+    // --- LÓGICA DE RENDERIZADO Y COMPRAS ---
+
+    // Renderizar Mejoras de Granja
     function renderShop() {
-        const shopItemsContainer = document.getElementById('shop-items');
         shopItemsContainer.innerHTML = '';
         upgrades.forEach(item => {
             const itemDiv = document.createElement('div');
@@ -125,24 +139,73 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             shopItemsContainer.appendChild(itemDiv);
         });
-
-        document.querySelectorAll('.buy-upgrade-btn').forEach(button => {
-            button.addEventListener('click', (e) => buyUpgrade(parseInt(e.currentTarget.dataset.id)));
-        });
     }
 
-    function buyUpgrade(id) {
-        const item = upgrades.find(u => u.id === id);
-        if (item && score >= item.cost) {
-            score -= item.cost;
-            productionPerHour += item.production;
-            item.cost *= 1.8; // Incrementar costo para la siguiente compra
-            renderShop(); // Re-renderizar para actualizar el estado del botón y el costo
-            updateUI();
+    // Comprar Mejoras de Granja (Delegación de Eventos)
+    shopItemsContainer.addEventListener('click', (e) => {
+        if (e.target && e.target.classList.contains('buy-upgrade-btn')) {
+            const upgradeId = parseInt(e.target.dataset.id);
+            const item = upgrades.find(u => u.id === upgradeId);
+            if (item && score >= item.cost) {
+                score -= item.cost;
+                productionPerHour += item.production;
+                item.cost *= 1.8;
+                renderShop();
+                updateUI();
+            }
+        }
+    });
+    
+    // Renderizar Tienda de TON
+    function renderSideShop() {
+        sideShopItemsContainer.innerHTML = '';
+        const isWalletConnected = tonConnectUI.connected;
+        shopProducts.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'purchase-option';
+            productDiv.innerHTML = `
+                <div class="ec-amount">${product.ecAmount.toLocaleString()} ${COIN_SYMBOL}</div>
+                <div class="ton-price">por ${product.tonPrice.toFixed(1)} TON</div>
+                <button class="buy-ton-button" data-ton-amount="${product.tonPrice}" data-ec-amount="${product.ecAmount}" ${!isWalletConnected ? 'disabled' : ''}>Comprar</button>
+            `;
+            sideShopItemsContainer.appendChild(productDiv);
+        });
+        if (!isWalletConnected) {
+            sideShopItemsContainer.innerHTML += `<p style="text-align: center; font-size: 14px;">Conecta tu billetera para comprar.</p>`;
         }
     }
 
-    // --- LÓGICA DE POTENCIAR CLIC ---
+    // Comprar en Tienda de TON (Delegación de Eventos)
+    sideShopItemsContainer.addEventListener('click', async (e) => {
+        if (e.target && e.target.classList.contains('buy-ton-button')) {
+            if (!tonConnectUI.connected) {
+                alert('Por favor, conecta tu billetera primero.');
+                return;
+            }
+            const tonAmount = e.target.dataset.tonAmount;
+            const ecAmount = parseInt(e.target.dataset.ecAmount, 10);
+            
+            // ¡¡¡IMPORTANTE!!! CAMBIA ESTA DIRECCIÓN POR LA DE TU BILLETERA TON
+            const myWalletAddress = 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAB';
+
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 600,
+                messages: [{ address: myWalletAddress, amount: (tonAmount * 1_000_000_000).toString() }]
+            };
+
+            try {
+                await tonConnectUI.sendTransaction(transaction);
+                alert('¡Transacción enviada! Recibirás tus Egg Coins en breve.');
+                score += ecAmount;
+                updateUI();
+            } catch (error) {
+                console.error('Transacción cancelada o fallida:', error);
+                alert('La transacción fue cancelada o falló.');
+            }
+        }
+    });
+
+    // Renderizar y Comprar Potenciador de Clic
     function renderBoost() {
         const cost = BASE_CLICK_UPGRADE_COST * fibonacci(clickLevel + 1);
         document.getElementById('click-level').textContent = clickLevel;
@@ -150,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('boost-cost').textContent = `${cost.toFixed(6)} ${COIN_SYMBOL}`;
         document.getElementById('buy-boost-button').disabled = score < cost;
     }
-
     document.getElementById('buy-boost-button').addEventListener('click', () => {
         const cost = BASE_CLICK_UPGRADE_COST * fibonacci(clickLevel + 1);
         if (score >= cost) {

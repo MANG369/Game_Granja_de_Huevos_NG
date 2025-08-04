@@ -9,6 +9,8 @@
 </head>
 <body>
 
+    <button id="toggle-shop-button" class="floating-shop-button">🛒</button>
+
     <div class="game-container">
         <div class="header">
             <h1 class="game-title">Granja de Huevos NG</h1>
@@ -42,10 +44,39 @@
         </div>
     </div>
 
+    <div id="side-shop" class="side-shop-container">
+        <div class="side-shop-header">
+            <h3>Tienda de $EC</h3>
+            <span id="close-side-shop" class="close-button">&times;</span>
+        </div>
+        <div id="side-shop-items" class="side-shop-content">
+            </div>
+    </div>
+
     <div id="shop-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Mejoras de la Granja</h2>
+            <div id="shop-items"></div>
         </div>
+    </div>
+
     <div id="boost-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Potenciar Clic</h2>
+            <div id="boost-content" class="boost-content">
+                <p>Mejora el valor de cada clic que haces.</p>
+                <div class="boost-info">
+                    <span>Nivel Actual: <strong id="click-level">1</strong></span>
+                    <span>Valor por Clic: <strong id="click-value">0.000001 $EC</strong></span>
+                </div>
+                <button id="buy-boost-button">
+                    Mejorar por <strong id="boost-cost">0.000010 $EC</strong>
+                </button>
+            </div>
         </div>
+    </div>
 
     <script src="game.js"></script>
 </body>
