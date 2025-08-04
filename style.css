@@ -12,7 +12,7 @@ body {
     background: radial-gradient(ellipse at bottom, #a7d282 0%, #64b5f6 100%);
     background-size: cover;
     background-repeat: no-repeat;
-    overflow: hidden; /* Evita barras de scroll por la tienda lateral */
+    overflow: hidden; 
 }
 
 .game-container {
@@ -60,7 +60,7 @@ body {
 #wallet-button { background-color: #0088cc; }
 
 .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-.modal-content { background-color: #fefefe; margin: 25% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 15px; position: relative; animation: fadeIn 0.3s; }
+.modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 15px; position: relative; animation: fadeIn 0.3s; }
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
 #shop-items, .boost-content { margin-top: 20px; }
@@ -70,6 +70,11 @@ body {
 .shop-item button:disabled, #buy-boost-button:disabled { background-color: #ccc; cursor: not-allowed; }
 .boost-content { text-align: center; }
 .boost-info { display: flex; justify-content: space-around; margin: 20px 0; background: #eee; padding: 10px; border-radius: 8px; }
+
+/* Estilos de la Recompensa Diaria */
+.daily-reward { border-top: 2px dashed #ddd; margin-top: 20px; padding-top: 20px; }
+#claim-daily-reward { background-color: #4CAF50; color: white; padding: 12px 20px; border-radius: 8px; border: none; font-size: 16px; cursor: pointer; }
+#claim-daily-reward:disabled { background-color: #9E9E9E; cursor: not-allowed; }
 
 /* Estilos de la Tienda Lateral */
 .floating-shop-button { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background-color: #ff9800; color: white; font-size: 24px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; transition: transform 0.2s ease; }

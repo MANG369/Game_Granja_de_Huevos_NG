@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <button id="toggle-shop-button" class="floating-shop-button">🛒</button>
+    <button id="toggle-shop-button" class="floating-shop-button">💎</button>
 
     <div class="game-container">
         <div class="header">
@@ -38,8 +38,8 @@
         </div>
         
         <div class="nav-buttons">
-            <button id="shop-button">Granja 🏡</button>
-            <button id="boost-button">Potenciar ✨</button>
+            <button id="shop-button">Granja 🐔</button>
+            <button id="boost-button">Potenciar 🚀</button>
             <button id="wallet-button">Conectar Billetera 💎</button>
         </div>
     </div>
@@ -49,8 +49,7 @@
             <h3>Tienda de $EC</h3>
             <span id="close-side-shop" class="close-button">&times;</span>
         </div>
-        <div id="side-shop-items" class="side-shop-content">
-            </div>
+        <div id="side-shop-items" class="side-shop-content"></div>
     </div>
 
     <div id="shop-modal" class="modal">
@@ -66,7 +65,6 @@
             <span class="close-button">&times;</span>
             <h2>Potenciar Clic</h2>
             <div id="boost-content" class="boost-content">
-                <p>Mejora el valor de cada clic que haces.</p>
                 <div class="boost-info">
                     <span>Nivel Actual: <strong id="click-level">1</strong></span>
                     <span>Valor por Clic: <strong id="click-value">0.000001 $EC</strong></span>
@@ -75,8 +73,16 @@
                     Mejorar por <strong id="boost-cost">0.000010 $EC</strong>
                 </button>
             </div>
+            <div id="daily-reward-section" class="daily-reward">
+                <h3>🎁 Combo Diario</h3>
+                <p>¡Vuelve mañana para otra recompensa!</p>
+                <button id="claim-daily-reward">Reclamar Recompensa</button>
+            </div>
         </div>
     </div>
+    
+    <audio id="click-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_16b841269e.mp3" preload="auto"></audio>
+    <audio id="buy-sound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_c3533c898a.mp3" preload="auto"></audio>
 
     <script src="game.js"></script>
 </body>
