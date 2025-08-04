@@ -1,19 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- ESTRUCTURA DE MONEDA ---
-    const COIN_NAME = 'Egg Coin';
+    // --- ESTRUCTURA DE MONEDA Y CONSTANTES ---
     const COIN_SYMBOL = '$EC';
+    const MAX_ENERGY = 1000;
+    const BASE_CLICK_VALUE = 0.000001;
+    const BASE_CLICK_UPGRADE_COST = 0.000010;
 
     // --- VARIABLES DEL JUEGO ---
     let score = 0;
     let productionPerHour = 0;
-    let energy = 1000;
-    const maxEnergy = 1000;
-
-    // --- VARIABLES DE PROGRESIÓN FIBONACCI ---
+    let energy = MAX_ENERGY;
     let clickLevel = 1;
-    const baseClickValue = 0.000001;
-    const baseClickUpgradeCost = 0.000010;
-    let currentClickValue = baseClickValue;
+    let currentClickValue = BASE_CLICK_VALUE;
 
     // --- ELEMENTOS DEL DOM ---
     const scoreDisplay = document.getElementById('score');
@@ -23,17 +20,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const energyBarFill = document.getElementById('energy-bar-fill');
     const clickValueDisplay = document.getElementById('click-value-display');
 
-    // Botones de Navegación
-    const shopButton = document.getElementById('shop-button');
-    const boostButton = document.getElementById('boost-button');
+    // --- LÓGICA DE TON CONNECT ---
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json',
+    });
+
     const walletButton = document.getElementById('wallet-button');
+    tonConnectUI.onStatusChange(wallet => {
+        if (wallet) {
+            const address = wallet.account.address;
+            const friendlyAddress = `${address.slice(0, 4)}...${address.slice(-4)}`;
+            walletButton.textContent = `Billetera: ${friendlyAddress}`;
+            walletButton.style.backgroundColor = '#4CAF50';
+        } else {
+            walletButton.textContent = 'Conectar Billetera 💎';
+            walletButton.style.backgroundColor = '#0088cc';
+        }
+    });
 
-    // Modales
-    const shopModal = document.getElementById('shop-modal');
-    const boostModal = document.getElementById('boost-modal');
-    const shopItemsContainer = document.getElementById('shop-items');
+    walletButton.addEventListener('click', () => {
+        tonConnectUI.connected ? tonConnectUI.disconnect() : tonConnectUI.openModal();
+    });
 
-    // --- MEJORAS DE LA GRANJA (costos ajustados para la nueva progresión) ---
+    // --- MEJORAS DE LA GRANJA ---
     const upgrades = [
         { id: 1, name: '🐣 Gallina Ponedora', cost: 0.0002, production: 1, purchased: 0 },
         { id: 2, name: '🏡 Nido Mejorado', cost: 0.001, production: 8, purchased: 0 },
@@ -42,21 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 5, name: '🚚 Camión de Reparto', cost: 1, production: 2584, purchased: 0 }
     ];
 
-    // --- FUNCIÓN FIBONACCI ---
-    // Memoization para calcular Fibonacci de forma eficiente
-    const fibMemo = {};
+    // --- FUNCIÓN FIBONACCI CON MEMOIZATION ---
+    const fibMemo = { 0: 1, 1: 1, 2: 2 };
     function fibonacci(n) {
         if (n in fibMemo) return fibMemo[n];
-        if (n <= 1) return n;
         fibMemo[n] = fibonacci(n - 1) + fibonacci(n - 2);
         return fibMemo[n];
     }
-    // Inicializamos con algunos valores para que no sea 0 al principio
-    fibMemo[0] = 1; fibMemo[1] = 1; fibMemo[2] = 2;
 
-    // --- LÓGICA DEL JUEGO ---
-
-    // Función de Clic en el Huevo
+    // --- LÓGICA CENTRAL DEL JUEGO ---
     mainEgg.addEventListener('click', () => {
         if (energy >= 1) {
             score += currentClickValue;
@@ -65,53 +68,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Regeneración de Energía
+    // Regeneración de Energía cada 2 segundos
     setInterval(() => {
-        if (energy < maxEnergy) {
-            energy += 2;
-            if (energy > maxEnergy) energy = maxEnergy;
+        if (energy < MAX_ENERGY) {
+            energy = Math.min(MAX_ENERGY, energy + 2);
             updateUI();
         }
     }, 2000);
 
-    // Generación de Ingresos Pasivos
+    // Generación de Ingresos Pasivos cada segundo
     setInterval(() => {
-        score += productionPerHour / 3600;
-        updateUI();
+        if (productionPerHour > 0) {
+            score += productionPerHour / 3600;
+            updateUI();
+        }
     }, 1000);
 
-    // --- LÓGICA DE LA BILLETERA TON ---
-    walletButton.addEventListener('click', () => {
-        // ABRIR API DE BILLETERA TON
-        // Esto crea un link de transacción. Debes cambiar la dirección y el monto.
-        const tonWalletAddress = 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c'; // Dirección de ejemplo
-        const amountNanoTon = '10000000'; // Monto en nanotons (0.01 TON)
-        window.location.href = `ton://transfer/${tonWalletAddress}?amount=${amountNanoTon}`;
+    // --- MANEJO DE MODALES (TIENDA Y POTENCIAR) ---
+    const modals = {
+        shop: { button: document.getElementById('shop-button'), modal: document.getElementById('shop-modal'), render: renderShop },
+        boost: { button: document.getElementById('boost-button'), modal: document.getElementById('boost-modal'), render: renderBoost }
+    };
+
+    Object.values(modals).forEach(item => {
+        item.button.addEventListener('click', () => {
+            item.render();
+            item.modal.style.display = 'block';
+        });
+        item.modal.querySelector('.close-button').addEventListener('click', () => {
+            item.modal.style.display = 'none';
+        });
     });
 
-    // --- LÓGICA DE POTENCIAR CLIC (FIBONACCI) ---
-    function openBoostModal() {
-        const cost = baseClickUpgradeCost * fibonacci(clickLevel + 1);
-        document.getElementById('click-level').textContent = clickLevel;
-        document.getElementById('click-value').textContent = `${currentClickValue.toFixed(6)} ${COIN_SYMBOL}`;
-        document.getElementById('boost-cost').textContent = `${cost.toFixed(6)} ${COIN_SYMBOL}`;
-        document.getElementById('buy-boost-button').disabled = score < cost;
-        boostModal.style.display = 'block';
-    }
-
-    document.getElementById('buy-boost-button').addEventListener('click', () => {
-        const cost = baseClickUpgradeCost * fibonacci(clickLevel + 1);
-        if (score >= cost) {
-            score -= cost;
-            clickLevel++;
-            currentClickValue = baseClickValue * fibonacci(clickLevel);
-            updateUI();
-            openBoostModal(); // Refrescar el modal con los nuevos valores
-        }
+    window.addEventListener('click', (event) => {
+        Object.values(modals).forEach(item => {
+            if (event.target === item.modal) {
+                item.modal.style.display = 'none';
+            }
+        });
     });
 
     // --- LÓGICA DE LA TIENDA ---
     function renderShop() {
+        const shopItemsContainer = document.getElementById('shop-items');
         shopItemsContainer.innerHTML = '';
         upgrades.forEach(item => {
             const itemDiv = document.createElement('div');
@@ -120,52 +119,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 <img src="hen_upgrade.png" alt="${item.name}">
                 <div>
                     <strong>${item.name}</strong><br>
-                    <small>+${item.production.toLocaleString()} ${COIN_SYMBOL}/hr | Costo: ${item.cost.toLocaleString()} ${COIN_SYMBOL}</small>
+                    <small>+${item.production.toLocaleString()} ${COIN_SYMBOL}/hr | Costo: ${item.cost.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} ${COIN_SYMBOL}</small>
                 </div>
-                <button id="buy-${item.id}" ${score < item.cost ? 'disabled' : ''}>Comprar</button>
+                <button class="buy-upgrade-btn" data-id="${item.id}" ${score < item.cost ? 'disabled' : ''}>Comprar</button>
             `;
             shopItemsContainer.appendChild(itemDiv);
+        });
 
-            document.getElementById(`buy-${item.id}`).addEventListener('click', () => {
-                if (score >= item.cost) {
-                    score -= item.cost;
-                    productionPerHour += item.production;
-                    item.cost = Math.floor(item.cost * 1.8); // Aumentar costo para la siguiente compra
-                    updateUI();
-                    renderShop();
-                }
-            });
+        document.querySelectorAll('.buy-upgrade-btn').forEach(button => {
+            button.addEventListener('click', (e) => buyUpgrade(parseInt(e.currentTarget.dataset.id)));
         });
     }
 
-    // --- CONTROL DE MODALES ---
-    function setupModal(button, modal) {
-        button.addEventListener('click', () => {
-            if (modal.id === 'shop-modal') renderShop();
-            if (modal.id === 'boost-modal') openBoostModal();
-            modal.style.display = 'block';
-        });
-        modal.querySelector('.close-button').addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
+    function buyUpgrade(id) {
+        const item = upgrades.find(u => u.id === id);
+        if (item && score >= item.cost) {
+            score -= item.cost;
+            productionPerHour += item.production;
+            item.cost *= 1.8; // Incrementar costo para la siguiente compra
+            renderShop(); // Re-renderizar para actualizar el estado del botón y el costo
+            updateUI();
+        }
     }
-    setupModal(shopButton, shopModal);
-    setupModal(boostButton, boostModal);
-    window.addEventListener('click', (event) => {
-        if (event.target == shopModal) shopModal.style.display = 'none';
-        if (event.target == boostModal) boostModal.style.display = 'none';
+
+    // --- LÓGICA DE POTENCIAR CLIC ---
+    function renderBoost() {
+        const cost = BASE_CLICK_UPGRADE_COST * fibonacci(clickLevel + 1);
+        document.getElementById('click-level').textContent = clickLevel;
+        document.getElementById('click-value').textContent = `${currentClickValue.toFixed(6)} ${COIN_SYMBOL}`;
+        document.getElementById('boost-cost').textContent = `${cost.toFixed(6)} ${COIN_SYMBOL}`;
+        document.getElementById('buy-boost-button').disabled = score < cost;
+    }
+
+    document.getElementById('buy-boost-button').addEventListener('click', () => {
+        const cost = BASE_CLICK_UPGRADE_COST * fibonacci(clickLevel + 1);
+        if (score >= cost) {
+            score -= cost;
+            clickLevel++;
+            currentClickValue = BASE_CLICK_VALUE * fibonacci(clickLevel);
+            renderBoost();
+            updateUI();
+        }
     });
-    
-    // --- FUNCIÓN DE ACTUALIZACIÓN DE UI ---
+
+    // --- FUNCIÓN CENTRAL DE ACTUALIZACIÓN DE UI ---
     function updateUI() {
         scoreDisplay.textContent = score.toFixed(6);
         productionRateDisplay.textContent = `${productionPerHour.toLocaleString()} ${COIN_SYMBOL}`;
-        energyLevelDisplay.textContent = `${energy} / ${maxEnergy}`;
-        energyBarFill.style.width = `${(energy / maxEnergy) * 100}%`;
+        energyLevelDisplay.textContent = `${energy} / ${MAX_ENERGY}`;
+        energyBarFill.style.width = `${(energy / MAX_ENERGY) * 100}%`;
         clickValueDisplay.textContent = `+${currentClickValue.toFixed(6)}`;
     }
 
-    // Inicializar UI
-    currentClickValue = baseClickValue * fibonacci(clickLevel);
+    // --- INICIALIZACIÓN DEL JUEGO ---
+    currentClickValue = BASE_CLICK_VALUE * fibonacci(clickLevel);
     updateUI();
 });
