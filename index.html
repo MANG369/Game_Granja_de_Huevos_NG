@@ -3,342 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Granja de Huevos N.G.</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans&display=swap');
-
-        :root {
-            --color-cielo: #87CEEB;
-            --color-pasto: #8BC34A;
-            --color-madera-clara: #DEB887;
-            --color-madera-oscura: #A0522D;
-            --color-texto: #3E2723;
-            --color-sombra: rgba(0, 0, 0, 0.2);
-            --color-wallet-btn: #0088cc; /* Color azul de Telegram */
-            --color-wallet-btn-hover: #0099e6;
-        }
-
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(to bottom, var(--color-cielo) 60%, var(--color-pasto) 40%);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--color-texto);
-            user-select: none;
-        }
-
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 3em;
-            color: white;
-            text-shadow: 2px 2px 4px var(--color-texto);
-        }
-
-        .panels-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .panel {
-            background-color: var(--color-madera-clara);
-            border: 5px solid var(--color-madera-oscura);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px var(--color-sombra);
-            min-width: 300px;
-            flex: 1;
-        }
-        
-        .panel h2 {
-            font-family: 'Fredoka One', cursive;
-            text-align: center;
-            margin-top: 0;
-            border-bottom: 3px solid var(--color-madera-oscura);
-            padding-bottom: 10px;
-        }
-
-        .stats-display {
-            font-size: 1.5em;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .stats-display p {
-            margin: 10px 0;
-        }
-
-        .chicken-area {
-            text-align: center;
-            position: relative;
-            min-height: 150px; /* Ajustado para el tamaño del emoji */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #chicken {
-            /* Se vuelve a usar font-size para el emoji */
-            font-size: 120px;
-            cursor: pointer;
-            transition: transform 0.1s ease-out;
-            /* Se elimina el background-image */
-            background-image: none;
-        }
-        
-        #chicken:active {
-            transform: scale(0.9);
-        }
-        
-        .floating-text {
-            position: absolute;
-            font-size: 1.5em;
-            font-family: 'Fredoka One', cursive;
-            color: #FFC107;
-            text-shadow: 1px 1px 2px black;
-            opacity: 1;
-            animation: float-up 1.5s ease-out forwards;
-            pointer-events: none;
-        }
-        
-        @keyframes float-up {
-            to {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-        }
-        
-        .shop button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2em;
-            margin-top: 10px;
-            border: none;
-            border-radius: 10px;
-            background-color: #FFC107;
-            color: var(--color-texto);
-            cursor: pointer;
-            border-bottom: 5px solid #FFA000;
-            transition: all 0.1s ease;
-        }
-
-        .shop button:hover:not(:disabled) {
-            background-color: #FFD54F;
-            transform: translateY(-2px);
-        }
-        
-        .shop button:active:not(:disabled) {
-            transform: translateY(2px);
-            border-bottom-width: 2px;
-        }
-
-        .shop button:disabled {
-            background-color: #BDBDBD;
-            color: #757575;
-            cursor: not-allowed;
-            border-bottom: 5px solid #757575;
-        }
-
-        #wallet-button {
-            background-color: var(--color-wallet-btn);
-            color: white;
-            border-bottom: 5px solid #0077b3;
-        }
-        #wallet-button:hover:not(:disabled) {
-            background-color: var(--color-wallet-btn-hover);
-        }
-        
-        .upgrade-cost {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 0.8em;
-            color: #614126;
-        }
-    </style>
+    <title>Granja de Huevos NG</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="game-container">
-        <h1>Granja de Huevos N.G.</h1>
-        
-        <div class="panels-container">
-            <div class="panel">
-                <h2>El Gallinero</h2>
-                <div class="chicken-area" id="chicken-area">
-                    <div id="chicken">🐔</div> 
-                </div>
-                <div class="stats-display">
-                    <p>$EC: <span id="ec-count">0.0000</span> 🪙</p>
-                    <p>$EC / clic: <span id="ec-per-click">0.0001</span></p>
+        <div class="header">
+            <img src="logo.png" alt="Logo Granja de Huevos NG" class="game-logo">
+            <div class="stats-bar">
+                <div class="stat">
+                    <span>Producción/Hora</span>
+                    <strong id="production-rate">0 $EC</strong>
                 </div>
             </div>
+        </div>
 
-            <div class="panel shop">
-                <h2>Tienda y Billetera</h2>
-                <button id="wallet-button">Conectar Billetera 💎</button>
-                <hr>
-                <button id="upgrade-click-button">
-                    Mejorar Clic (Nivel <span id="click-level">1</span>)
-                    <div class="upgrade-cost">Costo: <span id="upgrade-click-cost">0.01</span> $EC</div>
-                </button>
-                 <button id="buy-hen-button">
-                    Comprar Gallina (Producción / seg)
-                    <div class="upgrade-cost">Costo: <span id="buy-hen-cost">1</span> $EC</div>
+        <div class="score-container">
+            <h1 id="score">0.000000</h1>
+            <span class="currency-symbol">$EC</span>
+        </div>
+
+        <div class="egg-container">
+            <img src="https://emojicdn.elk.sh/🥚" alt="Huevo de Oro" id="main-egg" class="main-egg-img">
+            <div id="click-value-display">+0.000001</div>
+        </div>
+        
+        <div class="energy-bar-container">
+            ⚡️ <span id="energy-level">1000</span> / 1000
+            <div class="energy-bar"><div id="energy-bar-fill"></div></div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button id="shop-button">Granja 🏡</button>
+            <button id="boost-button">Potenciar ✨</button>
+            <button id="wallet-button">Billetera 👛</button>
+        </div>
+    </div>
+
+    <div id="shop-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Mejoras de la Granja</h2>
+            <div id="shop-items"></div>
+        </div>
+    </div>
+
+    <div id="boost-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Potenciar Clic</h2>
+            <div id="boost-content" class="boost-content">
+                <p>Mejora el valor de cada clic que haces.</p>
+                <div class="boost-info">
+                    <span>Nivel Actual: <strong id="click-level">1</strong></span>
+                    <span>Valor por Clic: <strong id="click-value">0.000001 $EC</strong></span>
+                </div>
+                <button id="buy-boost-button">
+                    Mejorar por <strong id="boost-cost">0.000010 $EC</strong>
                 </button>
             </div>
         </div>
     </div>
 
-    <script>
-        // --- LÓGICA DE TON CONNECT ---
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json', 
-        });
-
-        const walletButton = document.getElementById('wallet-button');
-
-        tonConnectUI.onStatusChange(wallet => {
-            if (wallet) {
-                const address = wallet.account.address;
-                const friendlyAddress = `${address.slice(0, 4)}...${address.slice(-4)}`;
-                walletButton.textContent = `Billetera: ${friendlyAddress}`;
-            } else {
-                walletButton.textContent = 'Conectar Billetera 💎';
-            }
-        });
-
-        walletButton.addEventListener('click', () => {
-            if (tonConnectUI.connected) {
-                tonConnectUI.disconnect();
-            } else {
-                tonConnectUI.openModal();
-            }
-        });
-
-
-        // --- ESTADO DEL JUEGO ---
-        let gameState = {
-            ecCount: 0,
-            clickLevel: 1,
-            henLevel: 0, 
-            ecPerSecond: 0,
-            baseReward: 0.0001,
-            baseClickCost: 0.01,
-            baseHenCost: 1,
-        };
-
-        // --- ELEMENTOS DEL DOM ---
-        const chicken = document.getElementById('chicken');
-        const chickenArea = document.getElementById('chicken-area');
-        const ecCountDisplay = document.getElementById('ec-count');
-        const ecPerClickDisplay = document.getElementById('ec-per-click');
-        const upgradeClickButton = document.getElementById('upgrade-click-button');
-        const clickLevelDisplay = document.getElementById('click-level');
-        const upgradeClickCostDisplay = document.getElementById('upgrade-click-cost');
-        const buyHenButton = document.getElementById('buy-hen-button');
-        const buyHenCostDisplay = document.getElementById('buy-hen-cost');
-
-        // --- LÓGICA DE FIBONACCI ---
-        function* fibonacciGenerator() {
-            let a = 1, b = 1;
-            while (true) {
-                yield a;
-                [a, b] = [b, a + b];
-            }
-        }
-        const fibSequence = [0];
-        const fibGen = fibonacciGenerator();
-        for(let i=1; i < 100; i++) {
-            fibSequence.push(fibGen.next().value);
-        }
-
-        // --- CÁLCULOS DEL JUEGO ---
-        function getClickReward(level) {
-            return fibSequence[level] * gameState.baseReward;
-        }
-        function getClickUpgradeCost(level) {
-            return fibSequence[level + 2] * gameState.baseClickCost;
-        }
-        function getHenUpgradeCost(level) {
-            return fibSequence[level + 5] * gameState.baseHenCost;
-        }
-
-        // --- LÓGICA DEL JUEGO ---
-        chicken.addEventListener('click', () => {
-            const reward = getClickReward(gameState.clickLevel);
-            gameState.ecCount += reward;
-            updateDisplays();
-            showFloatingText(`+${reward.toFixed(4)}`);
-        });
-        
-        upgradeClickButton.addEventListener('click', () => {
-            const cost = getClickUpgradeCost(gameState.clickLevel);
-            if (gameState.ecCount >= cost) {
-                gameState.ecCount -= cost;
-                gameState.clickLevel++;
-                updateDisplays();
-            }
-        });
-
-        buyHenButton.addEventListener('click', () => {
-            const cost = getHenUpgradeCost(gameState.henLevel);
-             if (gameState.ecCount >= cost) {
-                gameState.ecCount -= cost;
-                gameState.henLevel++;
-                gameState.ecPerSecond = fibSequence[gameState.henLevel] * gameState.baseReward;
-                updateDisplays();
-            }
-        });
-
-        function showFloatingText(text) {
-            const el = document.createElement('div');
-            el.textContent = text;
-            el.className = 'floating-text';
-            el.style.left = (Math.random() * 40 + 30) + '%';
-            chickenArea.appendChild(el);
-            setTimeout(() => { el.remove(); }, 1500);
-        }
-
-        // --- BUCLE PRINCIPAL Y ACTUALIZACIÓN DE PANTALLA ---
-        function updateDisplays() {
-            const currentClickReward = getClickReward(gameState.clickLevel);
-            const currentClickCost = getClickUpgradeCost(gameState.clickLevel);
-            const currentHenCost = getHenUpgradeCost(gameState.henLevel);
-            ecCountDisplay.textContent = gameState.ecCount.toFixed(4);
-            ecPerClickDisplay.textContent = currentClickReward.toFixed(4);
-            clickLevelDisplay.textContent = gameState.clickLevel;
-            upgradeClickCostDisplay.textContent = currentClickCost.toFixed(2);
-            buyHenCostDisplay.textContent = currentHenCost.toFixed(2);
-            upgradeClickButton.disabled = gameState.ecCount < currentClickCost;
-            buyHenButton.disabled = gameState.ecCount < currentHenCost;
-        }
-
-        function gameLoop() {
-            if (gameState.ecPerSecond > 0) {
-                 gameState.ecCount += gameState.ecPerSecond;
-                 updateDisplays();
-            }
-        }
-        
-        setInterval(gameLoop, 1000);
-        updateDisplays();
-    </script>
+    <script src="game.js"></script>
 </body>
 </html>
