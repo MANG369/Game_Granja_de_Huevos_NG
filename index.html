@@ -2,88 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Granja de Huevos NG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Galactic Diplomacy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
 <body>
-
-    <button id="toggle-shop-button" class="floating-shop-button">💎</button>
-
-    <div class="game-container">
-        <div class="header">
-            <h1 class="game-title">Granja de Huevos NG</h1>
-            <div class="stats-bar">
-                <div class="stat">
-                    <span>Producción/Hora</span>
-                    <strong id="production-rate">0 $EC</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="score-container">
-            <h1 id="score">0.000000</h1>
-            <span class="currency-symbol">$EC</span>
-        </div>
-
-        <div class="egg-container">
-            <img src="https://emojicdn.elk.sh/🥚" alt="Huevo de Oro" id="main-egg" class="main-egg-img">
-            <div id="click-value-display">+0.000001</div>
-        </div>
-        
-        <div class="energy-bar-container">
-            ⚡️ <span id="energy-level">1000</span> / 1000
-            <div class="energy-bar"><div id="energy-bar-fill"></div></div>
-        </div>
-        
-        <div class="nav-buttons">
-            <button id="shop-button">Granja 🐔</button>
-            <button id="boost-button">Potenciar 🚀</button>
-            <button id="wallet-button">Conectar Billetera 💎</button>
+    <div id="game-container">
+        <div id="loading-screen">
+            <div class="spinner"></div>
+            <p>Estableciendo Enlace Hiperlumínico...</p>
         </div>
     </div>
-
-    <div id="side-shop" class="side-shop-container">
-        <div class="side-shop-header">
-            <h3>Tienda de $EC</h3>
-            <span id="close-side-shop" class="close-button">&times;</span>
-        </div>
-        <div id="side-shop-items" class="side-shop-content"></div>
-    </div>
-
-    <div id="shop-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Mejoras de la Granja</h2>
-            <div id="shop-items"></div>
-        </div>
-    </div>
-
-    <div id="boost-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Potenciar Clic</h2>
-            <div id="boost-content" class="boost-content">
-                <div class="boost-info">
-                    <span>Nivel Actual: <strong id="click-level">1</strong></span>
-                    <span>Valor por Clic: <strong id="click-value">0.000001 $EC</strong></span>
-                </div>
-                <button id="buy-boost-button">
-                    Mejorar por <strong id="boost-cost">0.000010 $EC</strong>
-                </button>
-            </div>
-            <div id="daily-reward-section" class="daily-reward">
-                <h3>🎁 Combo Diario</h3>
-                <p>¡Vuelve mañana para otra recompensa!</p>
-                <button id="claim-daily-reward">Reclamar Recompensa</button>
-            </div>
-        </div>
-    </div>
-    
-    <audio id="click-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_16b841269e.mp3" preload="auto"></audio>
-    <audio id="buy-sound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_c3533c898a.mp3" preload="auto"></audio>
-
-    <script src="game.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
