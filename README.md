@@ -1,5 +1,4 @@
 <img width="2048" height="2048" alt="logo png" src="https://github.com/user-attachments/assets/ecd8be8c-28f0-47d1-bf42-7927f1bcb7ba" />
-# Game_Granja_de_Huevos_NG
 
 ## 1. Interactividad
 Los jugadores pueden interactuar con las gallinas y el entorno de la granja.
