@@ -21,6 +21,8 @@ El juego está desarrollado utilizando tecnologías web como HTML, CSS y JavaScr
 ## 7. Responsividad.
 Adaptación a diferentes tamaños de pantalla, lo que permite jugar en dispositivos móviles y de escritorio.
 
+<img width="2048" height="2048" alt="hen_upgrade png" src="https://github.com/user-attachments/assets/c7342199-c4d6-45f5-a6ae-87edd53292b7" />
+
 # Libro Blanco: Granja de Huevos NG.
 ## Versión 1.0 - Agosto 2025.
 
